@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles/app.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='styles/homepage.css') }}">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+	<title>Medical</title>
+    </head>
+    <body>
+	<div class="wrapper">
+	    <header>
+		{% if 'logged' in session and session['logged']%}
+		<div class="auth" id="auth">
+		    <div class="header__container"></div>
+		    <div class="navUser">
+			<a href="{{ url_for('profile') }}">My Profile</a>
+			<a href="{{ url_for('create_app') }}">Create appointment</a>
+			<a href="{{ url_for('logout') }}">Logout</a>
+		    </div>
+		</div>
+	</div>
+	{% else %}
+	<div class="nonAuth" id="nonAuth">
+	    <div class="header__container">
+		<div class="navAuth">
+		    <a href="{{ url_for('login') }}">
+			Sign in
+		    </a>
+		    <a href="{{ url_for('register') }}">
+			Create account
+		    </a>
+		</div>
+	    </div>
+	</div>
+	{% endif %}
+	    </header>
+	    <main>
+		<div class="descBlockMain">
+		    <p>Multidisciplinary Medical Center</p>
+		</div>
+		<div class="background"></div>
+		<div class="ourClients">
+		    <p>Our clients</p>
+		    <div class="contentClients">
+			<ul class="listContentClients"></ul>
+		    </div>
+		</div>
+	    </main>
+	    <footer>
+		<div class="infoPolicy">
+		    2023
+		</div>
+	    </footer>
+		</div>
+		<script src="{{ url_for('static', filename='scripts/clients.js') }}" type="module"></script>
+    </body>
+</html>

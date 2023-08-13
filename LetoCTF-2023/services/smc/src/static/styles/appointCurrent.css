@@ -1,0 +1,46 @@
+@font-face {
+    font-family: 'Gilroy-Bold';
+    src: url(../public/fonts/Gilroy-Bold.woff);
+}
+
+.appoint_box {
+    font-family: 'Gilroy-Bold';
+}
+
+.appoint_box .desc {
+    display: flex;
+    flex-direction: column;
+    font-size: 24px;
+    text-transform: uppercase;
+}
+
+.appoint_box .spec {
+    width: 100%;
+    font-size: 18px;
+    text-align: center;
+    background: white;
+    border-radius: 1em;
+    border: 3px solid rgb(82, 109, 218);
+}
+
+.appoint_box .dataAppoint div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 20px;
+    margin: 40px 0px;
+}
+
+.appoint_box .dataAppoint div svg {
+    margin-right: 20px;
+}
+
+.appoint_box .dataAppoint {
+    background: white;
+    border: 3px solid rgb(82, 109, 218);
+    border-radius: 1em;
+    margin-top: 30px;
+    padding: 20px;
+}
+

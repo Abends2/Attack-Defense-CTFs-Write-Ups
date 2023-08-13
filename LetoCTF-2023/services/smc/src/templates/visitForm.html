@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/visitForm.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <title>Medical</title>
+</head>
+
+<body>
+    <div class="App_wrapper">
+        <div class="form_box">
+            <div class="prevStep">
+		    <a href="{{ url_for('index') }}" class="prevStepLink">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                        class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
+                    </svg>
+                    Go back to the homepage
+                </a>
+            </div>
+            <div class="legend">
+                <h1>ARRANGE A VISIT</h1>
+            </div>
+	    <form action="{{ url_for('create_app_post') }}" method="POST" class="visitForm">
+                <div class="mb-3">
+                    <label for="inputName" class="form-label">Your name</label>
+                    <input name="fio" type="text" class="form-control" id="exampleInputName1" aria-describedby="emailHelp"
+                        placeholder="enter your name">
+                </div>
+                <div class="mb-3">
+                    <label for="dataPickerName" class="form-label">Select date appointment</label>
+                    <input name="timeStamp" type="date" class="form-control" id="exampleDataPickerName1" aria-describedby="emailHelp"
+                        placeholder="select date appointment">
+                </div>
+                <div class="mb-3">
+                    <label for="insurancePicker" class="form-label">Your insurance number</label>
+                    <input name="insNum" type="number" class="form-control" id="insurancePicker" aria-describedby="insurancePickerHelp"
+                        placeholder="enter your insurance">
+                </div>
+                <div class="pickerSpec" style="display: flex; flex-direction: column;">
+                    <label for="specPicker" class="form-label">Select specialist</label>
+                    <select name="doctor" class="form-select" aria-label="select specialist">
+                        <option selected>- not selected -</option>
+                      </select>
+                </div>
+                <div class="visit">
+                    <button type="submit" class="btn btn-primary" id="submitVisitForm">Register visit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+	const fetchSelect = {
+	    itterator: {{ doctors|safe }}.list,
+	    dataPos: 1,
+	}
+
+	const formSelect = document.querySelector('.form-select');
+
+	for (let i= 0; i < fetchSelect.itterator.length; i++) {
+	    const el = document.createElement("option");
+	    el.textContent = fetchSelect.itterator[i][fetchSelect.dataPos]
+	    formSelect.append(el);
+	}
+    </script>
+</body>
+
+</html>

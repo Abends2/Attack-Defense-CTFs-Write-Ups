@@ -1,0 +1,23 @@
+version: '3.4'
+services:
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: smcadmin
+      POSTGRES_DB: smcdb
+      POSTGRES_PASSWORD: jNEqMMLtjiprDSOpsRpSQ
+    networks:
+      - smcnet
+  smc:
+    build: .
+    command: gunicorn -w 6 --bind 0.0.0.0:1337 --log-level debug run:app
+    restart: unless-stopped
+    environment:
+      POSTGRES_CONNECT: postgres://smcadmin:jNEqMMLtjiprDSOpsRpSQ@postgres:5432/smcdb
+    ports:
+      - "1337:1337"
+    networks:
+      - smcnet
+networks:
+  smcnet: {}

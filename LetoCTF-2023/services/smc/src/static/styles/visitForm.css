@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Gilroy-Bold';
+    src: url(../public/fonts/Gilroy-Bold.woff);
+}
+
+.App_wrapper .form_box .btn {
+    font-family: 'Gilroy-Bold';
+    border-radius: 1em;
+}

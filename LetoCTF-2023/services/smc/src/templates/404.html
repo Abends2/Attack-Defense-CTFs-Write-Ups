@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/404.css') }}">
+    <title>404: Page not found</title>
+</head>
+<body>
+    <div class="App_wrapper">
+        <div class="form_box">
+            <h1>404 Error Page</h1>
+            <section class="error-container">
+              <span class="four"><span class="screen-reader-text">4</span></span>
+              <span class="zero"><span class="screen-reader-text">0</span></span>
+              <span class="four"><span class="screen-reader-text">4</span></span>
+            </section>
+	    <h1>
+		    _PATH_ not found!
+	    </h1>
+            <div class="link-container">
+		    <a target="_blank" href="{{ url_for('index') }}" class="more-link">Back to homepage</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,258 @@
+@font-face {
+    font-family: 'Gilroy-Bold';
+    src: url(../public/fonts/Gilroy-Bold.woff);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    overflow: hidden;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    overflow-x: hidden
+}
+
+body {
+    height: 100%
+}
+
+button {
+    outline: none;
+    border: none;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+a:hover {
+    color: rgb(52, 48, 48);
+    opacity: 0.6;
+}
+
+.App_wrapper{
+    background: rgb(243, 242, 241);
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.appoint_box,
+.form_box,
+.profile_box{
+    background: rgb(240, 126, 126);
+    padding: 70px;
+    border-radius: 1em;
+    border: 10px solid rgb(255, 255, 255);
+    box-shadow: 1px 12px 21px 1px rgba(58, 58, 226, 0.2);
+    max-width: 650px;
+    max-height: 97%;
+    font-family: 'Gilroy-Bold';
+}
+
+.form_box form .form-control{
+    min-width: 350px;
+    padding: 10px;
+    color: black;
+    min-height: 60px;
+}
+
+/* .form_box form .form-control::before{
+    content: "*";
+    padding: 2px;
+    color: red;
+} */
+
+.form_box form .btn_container {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form_box form .btn_container .btn{
+    font-size: 18px;
+    padding: 10px;
+    width: 100%;
+}
+
+.form_box .legend {
+    font-weight: 300;
+    color: rgb(23, 22, 22);
+    font-size: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.form_box .create {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form_box .visit {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.form_box .visit .btn{
+    border: none;
+    background: rgb(81, 81, 155);
+    font-size: 18px;
+    padding: 10px;
+    width: 100%;
+}
+
+.form_box .visit .btn:hover {
+    background: rgba(11, 80, 218, 0.4)
+}
+
+.form_box .create .btn{
+    border: none;
+    background: rgb(81, 81, 155);
+    font-size: 18px;
+    padding: 10px;
+    width: 100%;
+}
+
+.form_box .create .btn:hover {
+    background: rgba(11, 80, 218, 0.4)
+}
+
+.form_box .wasReg{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.wasReg p {
+    font-size: 18px;
+    margin: 0;
+    padding: 4px;
+}
+
+.form_box .legend h4 {
+    color: rgb(245, 239, 239);
+    font-weight: 200;
+    text-align: left;
+    margin-top: 30px;
+}
+
+.prevStep {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.prevStep .prevStepLink {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+}
+
+.prevStep .prevStepLink svg {
+    fill: black;
+    margin-right: 6px;
+}
+
+.prevStep {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 18px;
+}
+
+.prevStep .prevStepLink {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prevStep .prevStepLink svg {
+    fill: black;
+    margin-right: 6px;
+}
+
+.App_wrapper .error {
+    font-family: 'Gilroy-Bold';
+    font-size: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    animation: errorAnimation forwards 1s ease-in-out;
+    padding: 20px;
+}
+
+.App_wrapper .error .content {
+    width: 45%;
+    background: rgb(248, 145, 18);
+    padding: 10px;
+    border-radius: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.App_wrapper .error .bi-x-circle{
+    margin-left: 20px;
+}
+
+.App_wrapper .error .bi-x-circle:hover {
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.App_wrapper .error p {
+    margin: 0;
+    margin-left: 20px;
+}
+   
+@keyframes errorAnimation{
+    0% {
+        top: -100px;
+    }
+    100% {
+        top: 0px;
+    }
+}

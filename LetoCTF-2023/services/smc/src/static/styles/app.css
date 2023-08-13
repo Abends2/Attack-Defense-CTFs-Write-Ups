@@ -1,0 +1,59 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    overflow: hidden;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    overflow-x: hidden
+}
+
+body {
+    height: 100%
+}
+
+button {
+    outline: none;
+    border: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+.App_wrapper{
+    background: rgb(243, 242, 241);
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[class*="__container"]{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 1700px;
+}

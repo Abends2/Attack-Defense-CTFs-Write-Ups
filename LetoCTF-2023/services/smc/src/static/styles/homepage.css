@@ -1,0 +1,243 @@
+@font-face {
+    font-family: 'Gilroy-Bold';
+    src: url(../public/fonts/Gilroy-Bold.woff);
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+}
+    
+main {
+    margin-top: 80px;
+    background: rgb(243, 242, 241);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    flex: 1 1 auto;
+    background-size: cover;
+    border-radius: 1em;
+}
+
+.background {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    height: 100vh;
+    background: url(../public/images/hospital.jpg) no-repeat;
+    background-size: cover;
+    margin: 40px;
+    border-radius: 1em;
+}
+
+footer {
+    font-family: 'Gilroy-Bold';
+    background: rgb(240, 126, 126);
+    min-height: 0px;
+    display: flex;
+    justify-content: center;
+}
+
+header {
+    background: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 19%, rgba(240, 126, 126, 1) 81%, rgba(240, 126, 126, 1)), linear-gradient(to right, #fff 0%, #fff 33%, rgba(255, 255, 255, 1) 48%, rgba(255, 255, 255, 0.17) 60%, rgba(255, 255, 255, 0) 71%, rgba(255, 255, 255, 0) 84%, #fff 100%);
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+}
+
+header .navAuth,
+.navUser {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+}
+
+.navAuth a{
+    font-family: 'Gilroy-Bold';
+    background: white;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1em;
+    margin: 10px;
+    font-size: 18px;
+    color: black;
+    text-decoration: none;
+}
+
+.navUser a{
+    font-family: 'Gilroy-Bold';
+    background: white;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+    align-items: center;
+    border-radius: 1em;
+    margin: 10px;
+    font-size: 18px;
+    color: black;
+}
+
+.navAuth a:hover {
+    background: rgb(153, 151, 150, 0.5);
+    color: white;
+}
+
+.navAuth .toReg {
+    margin-left: 10px;
+}
+
+.navUser a:hover {
+    background: rgb(153, 151, 150, 0.5);
+    color: white;
+}
+
+.navUser .toReg {
+    margin-left: 10px;
+}
+
+.header__container{
+    display: flex;
+    justify-content: flex-end;
+}
+
+footer .infoPolicy {
+    color: white;
+    font-size: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    width: 20%;
+}
+
+.descBlockMain{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Gilroy-Bold';
+    font-size: 22px;
+    margin-top: 40px;
+}
+
+.descBlockMain .actionVisitBtn{
+    font-family: 'Gilroy-Bold';
+    background: rgb(241, 216, 216);
+    padding: 22px;
+    color: black;
+    width: 80%;
+    margin-top: 30px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 1em;
+}
+
+.descBlockMain p {
+    font-size: 26px;
+    text-transform: uppercase;
+}
+
+
+.ourClients {
+    display: flex;
+    
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 40px;
+    width: 100%;
+}
+
+.ourClients p {
+    text-align: center;
+    font-family: 'Gilroy-Bold';
+    font-size: 26px;
+    text-transform: uppercase;
+}
+
+.ourClients ul {
+    border-radius: 1em;
+    margin: 40px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 19%, rgba(240, 126, 126, 1) 81%, rgba(240, 126, 126, 0.4)), linear-gradient(to right, #fff 0%, #fff 33%, rgba(255, 255, 255, 1) 48%, rgba(255, 255, 255, 0.17) 60%, rgba(255, 255, 255, 0) 71%, rgba(255, 255, 255, 0) 84%, #fff 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-left: 0;
+}
+
+.ourClients li {
+    font-family: 'Gilroy-Bold';
+    padding: 10px;
+    font-size: 20px;
+    text-decoration: none;
+    list-style: none;
+    margin-left: 40px;
+}
+
+.descBlockMain .actionVisitBtn:hover {
+    color: rgba(0, 0, 0,0.3);
+    animation: actionBtn forwards 0.5 ease-in-out;
+}
+
+.listContentClients {
+    background: rgb(38, 198, 23);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    margin: 10px;
+    padding-left: 0;
+}
+
+@keyframes actionBtn{
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.2);
+    }
+}
+
+
+/* nav {
+    background: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 1) 19%, rgb(179, 98, 98) 81%, rgba(240, 126, 126, 1)), linear-gradient(to right, #fff 0%, #fff 33%, rgba(255, 255, 255, 1) 48%, rgba(255, 255, 255, 0.17) 60%, rgba(255, 255, 255, 0) 71%, rgba(255, 255, 255, 0) 84%, #fff 100%);
+    min-height: 60px;
+    font-family: 'Gilroy-Bold';
+    min-height: 30px;
+    margin-top: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+} */
+
+nav .nav__container {
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+nav .navUser a {
+    font-size: 18px;
+    color: black;
+    text-decoration: none;
+}
+
+nav .navUser a:not(:last-child) {
+    margin-right: 22px;
+    font-size: 18px;
+    color: black;
+    text-decoration: none;
+}
+
+nav .navUser a:hover {
+    color: rgb(241, 237, 237);
+}
+

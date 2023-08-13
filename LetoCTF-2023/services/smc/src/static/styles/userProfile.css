@@ -1,0 +1,70 @@
+@font-face {
+    font-family: 'Gilroy-Bold';
+    src: url(../public/fonts/Gilroy-Bold.woff);
+}
+
+
+.App_wrapper .profile_box{
+    font-family: 'Gilroy-Bold';
+    flex-direction: column;
+}
+
+.profile_box .info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: white;
+    padding: 10px;
+    border-radius: 1em;
+}
+
+.avatar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 30px;
+}
+
+.avatar .username {
+    font-size: 20px;
+    margin-left: 20px;
+    background: white;
+    padding: 10px 40px;
+    border-radius: 1em;
+}
+
+.profile_box .info div {
+
+    font-size: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: left;
+}
+
+.profile_box .userAppoints h2 {
+    text-align: center;
+    margin: 20px 0px;
+
+}
+
+.profile_box .userAppoints table {
+    border-radius: 1em;
+    background: white;
+    width: 100%;
+    padding: 20px;
+    box-shadow: 1px 12px 21px 1px rgba(58, 58, 226, 0.2);
+}
+
+.profile_box .userAppoints table tr {
+    margin-bottom: 10px;
+    border: 1px solid black;
+    flex-direction: column;
+}
+
+.profile_box .userAppoints table tr td {
+    margin: 20px 0px;
+    border: 1px solid black;
+}

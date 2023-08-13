@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/userProfile.css') }}">
+    <title>Medical</title>
+</head>
+
+<body>
+    <div class="App_wrapper">
+        <div class="profile_box">
+            <div class="prevStep">
+		    <a href="{{ url_for('index') }}" class="prevStepLink">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"/>
+                    </svg>
+                    Go back to the homepage
+                </a>
+            </div>
+            <div class="avatar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" fill="currentColor"
+                    class="bi bi-person-circle" viewBox="0 0 16 16">
+                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                    <path fill-rule="evenodd"
+                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                </svg>
+                <div class="username">
+			{{ user[2] }}
+                </div>
+            </div>
+            <div class="info">
+                <div class="personalData">
+                    <p>personal data:</p> <br>
+		    <p>{{ user[4] }}</p>
+                </div>
+            </div>
+            <div class="userAppoints">
+                <table>
+                    <h2>my appointments</h2>
+                    <tr>
+                        <th>Client Name</th>
+                        <th>Doctor Name</th>
+                        <th>Link</th>
+                    </tr>
+		    {% for _app in apps %}
+		    <tr>
+			<td>{{ _app[3] }}</td>
+			<td>{{ _app[2] }}</td>
+			<td><a href="{{ url_for('info_app', appid=_app[0]) }}">Link</a></td>
+		    </tr>
+		    {% endfor %}
+                </table>
+            </div>
+        </div>
+</body>
+
+</html>
