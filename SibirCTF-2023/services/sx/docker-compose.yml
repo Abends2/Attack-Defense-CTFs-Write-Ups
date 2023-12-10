@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  sx-backend:
+    build: .
+    read_only: true
+    restart: always
+    environment:
+      - DATABASE_FILE=/etc/data/database
+      - AVATARS_DIR=/etc/data/avatars
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "1024M"
+    volumes:
+      - ./data:/etc/data
+    networks:
+      - sx-network
+
+  sx-nginx:
+    image: nginx:1.15-alpine
+    restart: unless-stopped
+    volumes:
+      - ./data:/etc/data
+      - ./nginx/:/etc/nginx/
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "1024M"
+    ports:
+      - "3080:3080"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    depends_on:
+      - sx-backend
+    networks:
+      - sx-network
+
+volumes:
+  sx-data:
+    external: false
+
+networks:
+  sx-network:
+    driver: bridge
